@@ -22,9 +22,12 @@ if not api_key:
 if "ocr_result" not in st.session_state:
     st.session_state["ocr_result"] = None
 
-# 2. Input Shareable Links
+# 2. Choose file type: PDF or Image
+file_type = st.radio("Select file type", ("PDF", "Image"))
+
+# 3. Input Shareable Links
 st.subheader("Enter Shareable Links to Files")
-input_links = st.text_area("Paste OneDrive/OneNote shareable links (one per line)", value="https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf")
+input_links = st.text_area("Paste OneDrive/OneNote shareable links (one per line)")
 
 if not input_links:
     st.info("Please paste the shareable links to continue.")
@@ -33,7 +36,7 @@ if not input_links:
 # Split links into a list
 file_links = input_links.strip().split("\n")
 
-# 3. Process Button & OCR Handling
+# 4. Process Button & OCR Handling
 if st.button("Process"):
     client = Mistral(api_key=api_key)
     extracted_data = []
@@ -50,13 +53,13 @@ if st.button("Process"):
             file_name = link.split("/")[-1]  # Extract file name from the link
 
             # Prepare the document payload based on file type
-            if file_name.endswith('.pdf'):
+            if file_type == "PDF":
                 encoded_file = base64.b64encode(file_bytes).decode("utf-8")
                 document = {
                     "type": "document_base64",  # Correct type for PDFs
                     "document_base64": encoded_file  # Correct field for PDFs
                 }
-            else:  # Assume it's an image
+            else:  # Image
                 mime_type = "image/jpeg" if file_name.endswith('.jpg') or file_name.endswith('.jpeg') else "image/png"
                 encoded_image = base64.b64encode(file_bytes).decode("utf-8")
                 document = {
@@ -104,7 +107,7 @@ if st.button("Process"):
 
     st.session_state["ocr_result"] = extracted_data
 
-# 4. Display Extracted Data and Download Excel
+# 5. Display Extracted Data and Download Excel
 if st.session_state["ocr_result"]:
     st.subheader("Extracted Data")
     df = pd.DataFrame(st.session_state["ocr_result"])
