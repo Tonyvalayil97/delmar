@@ -1,7 +1,7 @@
 import streamlit as st
 import requests
 import pandas as pd
-import base64  # Import the base64 module
+import base64
 from mistralai import Mistral
 
 st.set_page_config(layout="wide", page_title="Mistral OCR App", page_icon="🖥️")
@@ -24,7 +24,7 @@ if "ocr_result" not in st.session_state:
 
 # 2. Input Shareable Links
 st.subheader("Enter Shareable Links to Files")
-input_links = st.text_area("Paste OneDrive/OneNote shareable links (one per line)")
+input_links = st.text_area("Paste OneDrive/OneNote shareable links (one per line)", value="https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf")
 
 if not input_links:
     st.info("Please paste the shareable links to continue.")
@@ -53,15 +53,15 @@ if st.button("Process"):
             if file_name.endswith('.pdf'):
                 encoded_file = base64.b64encode(file_bytes).decode("utf-8")
                 document = {
-                    "type": "document_base64",
-                    "document_base64": encoded_file
+                    "type": "document_base64",  # Correct type for PDFs
+                    "document_base64": encoded_file  # Correct field for PDFs
                 }
             else:  # Assume it's an image
                 mime_type = "image/jpeg" if file_name.endswith('.jpg') or file_name.endswith('.jpeg') else "image/png"
                 encoded_image = base64.b64encode(file_bytes).decode("utf-8")
                 document = {
-                    "type": "image_url",
-                    "image_url": f"data:{mime_type};base64,{encoded_image}"
+                    "type": "image_base64",  # Correct type for images
+                    "image_base64": encoded_image  # Correct field for images
                 }
 
             with st.spinner(f"Processing {file_name}..."):
