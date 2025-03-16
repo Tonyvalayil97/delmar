@@ -1,6 +1,7 @@
 import streamlit as st
 import requests
 import pandas as pd
+import base64  # Import the base64 module
 from mistralai import Mistral
 
 st.set_page_config(layout="wide", page_title="Mistral OCR App", page_icon="🖥️")
