@@ -29,18 +29,20 @@ if "image_bytes" not in st.session_state:
 # 2. Choose file type: PDF or Image
 file_type = st.radio("Select file type", ("PDF", "Image"))
 
-# 3. Select source type: Folder Upload
-source_type = st.radio("Select source type", ("Folder Upload",))
+# 3. Use a relative path for the upload folder
+folder_path = "UPLOAD_FOLDER"
 
-# Folder path for upload
-folder_path = "C:\\Users\\Tony\\Desktop\\UPLOAD_FOLDER"
+# Check if the folder exists
+if not os.path.exists(folder_path):
+    st.error(f"The folder '{folder_path}' does not exist. Please create it and add files.")
+    st.stop()
 
 # Get list of files in the folder
 files_in_folder = os.listdir(folder_path)
 uploaded_files = [file for file in files_in_folder if file.endswith(('.pdf', '.jpg', '.jpeg', '.png'))]
 
 if not uploaded_files:
-    st.error("No files found in the upload folder.")
+    st.error("No valid files found in the upload folder.")
     st.stop()
 
 # 4. Process Button & OCR Handling
